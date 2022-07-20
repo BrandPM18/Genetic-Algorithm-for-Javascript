@@ -50,4 +50,14 @@ console.log(individuals.reduce((prev,curr) => {
 
 // console.log(individuals.sort((a,b) => a.fitness - b.fitness))
 
-console.log(individuals[~~(Math.random() *individuals.length)])
+function choise_samples(size,k=1) {
+    let choises = []
+    let i = 0;
+    while (i < k) {
+      let event = Math.floor(Math.random() *size);
+      choises.push(event);
+      i++;
+    }
+    return choises;
+  }
+

@@ -52,21 +52,39 @@ function sumator_fit(events) {
   }, initialValue)
 }
 
-function choise_samples(events,k=1) {
+function choise_samples(events,k=1,repetition=false) {
   let choises = []
   let i = 0;
   while (i < k) {
-    let event = events[~~(Math.random() *events.length)];
-    if(choises.indexOf(event)!==-1){
+    let event = events[Math.floor(Math.random() *events.length)];
+    if(!repetition) {
+      if(choises.indexOf(event) === -1) {
+          choises.push(event);
+          i++;    
+      }
+    } else {
       choises.push(event);
+      i++;    
     }
   }
-
+  return choises;
 }
+
+function samples_array(size,k=2) {
+  let choises = []
+  let i = 0;
+  while (i < k) {
+    let event = Math.floor(Math.random() *size);
+    choises.push(event);
+    i++;
+  }
+  return choises;
+}
+
 
 class Selection_GA {
 
-  constructor(_name, _indiv, _size=1, _param = 0) {
+  constructor(_name, _indiv, _size=1, _param = 1) {
     this._name = _name;
     this._indiv = _indiv;
     this._size = _size;
@@ -140,15 +158,41 @@ class Selection_GA {
     return individuals_choised;
   }
 
-  uniform() {}
+  uniform() {
+    const sum_fitness = sumator_fit(this._indiv);
+    let new_individuals = this._indiv.map((indiv) => {
+      let new_individual = indiv;
+      new_individual.selection_probability = 1 / sum_fitness;
+      return new_individual;
+    })
+
+    const individuals_choised = choice(
+      events = new_individuals,
+      size = this._size,
+      probability = new_individuals.map(indiv => indiv.selection_probability)
+      );
+  
+    return individuals_choised;
+  }
 
   boltzman() {
     let individuals_choised = [];
+    let copy_indiv = this._indiv;
     while (individuals_choised.length < this._size) {
-      let individuals_candidates  = Array.prototype.map(()=>{
-        return Math.random()*this._indiv.length
-      })
+      const index_candidates  = samples_array(copy_indiv.length,2);
+      let p = 1/(1+ Math.exp(
+        (copy_indiv[index_candidates[0]].fitness - copy_indiv[index_candidates[1]].fitness)/this._param
+      ));
+      if (Math.random() <= p) {
+        individuals_choised.push(copy_indiv[index_candidates[0]]);
+        copy_indiv.splice(index_candidates[0],1);;
+      } else {
+        individuals_choised.push(copy_indiv[index_candidates[1]]);
+        copy_indiv.splice(index_candidates[1],1);;
+      }
     }
+
+    return individuals_choised;
   }
 }
 

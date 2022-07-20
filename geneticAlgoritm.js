@@ -20,28 +20,34 @@ console.log({
 })
 
 let geno= [1,2,3,0,0,0]
-console.log(get_individual_from_genotype(geno))
+// console.log(get_individual_from_genotype(geno))
 
 
 let individuals = [
     {
         "genotype": [1,2,3,0,0,0,0],
         "phenotype": [1,2,3],
-        "fitness": 123,
+        "fitness": 23,
         "selection_probability": 0.344
     },
     {
         "genotype": [1,2,3,0,0,0,0],
         "phenotype": [1,2,3],
-        "fitness": 123,
+        "fitness": 13,
         "selection_probability": 0.565
     },
     {
         "genotype": [1,2,3,0,0,0,0],
         "phenotype": [1,2,3],
-        "fitness": 123,
+        "fitness": 11,
         "selection_probability": 0.145
     }
 ]
+let initialValue = 0;
+console.log(individuals.reduce((prev,curr) => {
+    return prev + curr.fitness
+  }, initialValue))
 
-console.log(individuals.map(indiv => indiv.selection_probability))
+// console.log(individuals.sort((a,b) => a.fitness - b.fitness))
+
+console.log(individuals[~~(Math.random() *individuals.length)])

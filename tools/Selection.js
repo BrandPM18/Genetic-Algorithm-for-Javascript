@@ -39,13 +39,37 @@ function choice(events, size, probability, repetition= false) {
   return choices;
 }
 
+function minimum(events) {
+  return events.reduce((prev,curr) => {
+    return prev.fitness < curr.fitness ? prev : curr;
+})
+}
+
+function sumator_fit(events) {
+  let initialValue = 0;
+  return events.reduce((prev,curr) => {
+    return prev + curr.fitness
+  }, initialValue)
+}
+
+function choise_samples(events,k=1) {
+  let choises = []
+  let i = 0;
+  while (i < k) {
+    let event = events[~~(Math.random() *events.length)];
+    if(choises.indexOf(event)!==-1){
+      choises.push(event);
+    }
+  }
+
+}
+
 class Selection_GA {
 
-  constructor(_name, _indiv, _size=1, _param = 0, _presion = false) {
+  constructor(_name, _indiv, _size=1, _param = 0) {
     this._name = _name;
     this._indiv = _indiv;
     this._size = _size;
-    this._presion = _presion;
     this._param = _param;
   }
   
@@ -53,16 +77,12 @@ class Selection_GA {
     switch (this._name) {
       case 'ruleta':                
         return this.roulette();
-      case 'proporcional':
-        return this.proportional();
       case 'ranking lineal':                
         return this.lineal_rank();
       case 'torneo':                
         return this.tournament();
       case 'uniforme':                
         return this.uniform();
-      case 'muestreo estocastico':                
-        return this.stochastic_sampling();
       case 'boltzman':                
         return this.boltzman();
       default: // ruleta
@@ -71,30 +91,65 @@ class Selection_GA {
   }
 
   roulette() {
+    const sum_fitness = sumator_fit(this._indiv);
+    let new_individuals = this._indiv.map((indiv) => {
+      let new_individual = indiv;
+      new_individual.selection_probability = indiv.fitness / sum_fitness;
+      return new_individual;
+    })
     const individuals_choised = choice(
-      events = this._indiv,
+      events = new_individuals,
       size = this._size,
-      probability = this._indiv.map(indiv => indiv.selection_probability)
+      probability = new_individuals.map(indiv => indiv.selection_probability)
       );
-    if (!this._presion) {
-      return individuals_choised;
-    } 
-    
+  
+    return individuals_choised;
   }
 
-  proportional() {
 
+  tournament() {
+    let individuals_choised = []
+    let j = 0;
+    while( j < this._size ) {
+      let b_id = -1;
+      for (let i = 0; i < this._param; i++) {
+        id = Math.floor(Math.random()*len_individuals);
+        if (b_id==-1 || this._indiv[b_id].fitness < this._indiv[id].fitness)
+          b_id = id;
+      }
+      if(individuals_choised.indexOf(this._indiv[b_id])===-1) {
+        individuals_choised.push(this._indiv[b_id]);
+        j++;
+      }
+    }
+
+    return individuals_choised;
   }
 
-  tournament() {}
-
-  lineal_rank() {}
-
-  stochastic_sampling() {}
+  lineal_rank() {
+    let new_individuals = this._indiv.sort((a,b) => a.fitness - b.fitness);
+    let mu = new_individuals.length;
+    for (let i = 0; i < mu; i++) {
+      new_individuals[i].selection_probability = ((2-this._param)/mu) + 2*i*((this._param-1)/(mu*(mu-1)));
+    }
+    const individuals_choised = choice(
+      events = new_individuals,
+      size = this._size,
+      probability = new_individuals.map(indiv => indiv.selection_probability)
+      );
+    return individuals_choised;
+  }
 
   uniform() {}
 
-  boltzman() {}
+  boltzman() {
+    let individuals_choised = [];
+    while (individuals_choised.length < this._size) {
+      let individuals_candidates  = Array.prototype.map(()=>{
+        return Math.random()*this._indiv.length
+      })
+    }
+  }
 }
 
 

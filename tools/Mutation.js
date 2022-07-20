@@ -7,21 +7,23 @@ class Mutation_GA {
     }
     
     execute() {
-        switch (this._name) {
-            case 'intercambio':                
-                return this.swap();
-            case 'inserción':                
-                return this.insertion();
-            case 'uniforme':                
-                return this.uniform();
-            case 'inversión':                
-                return this.invert();
-            case 'mezcla':                
-                return this.scramble();
-            case 'heuristico':                
-                return this.heuristic();
-            default: // intercambio
-                return this.swap();
+        if (Math.random()<this._prob_crossover) {
+            switch (this._name) {
+                case 'intercambio':                
+                    return this.swap();
+                case 'inserción':                
+                    return this.insertion();
+                case 'uniforme':                
+                    return this.uniform();
+                case 'inversión':                
+                    return this.invert();
+                case 'mezcla':                
+                    return this.scramble();
+                case 'heuristico':                
+                    return this.heuristic();
+                default: // intercambio
+                    return this.swap();
+            }
         }
     }
 

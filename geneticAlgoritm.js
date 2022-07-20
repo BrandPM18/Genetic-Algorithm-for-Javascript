@@ -61,3 +61,6 @@ function choise_samples(size,k=1) {
     return choises;
   }
 
+  let ar = [3,4,5,6,7,8,9,9];
+console.log(ar.slice(3,ar.length))
+

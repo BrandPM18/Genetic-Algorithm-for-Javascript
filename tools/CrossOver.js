@@ -96,7 +96,6 @@ class CrossOver_GA {
             }
         });
         let rand_selector = Math.floor(Math.random() * (rs_points.length));
-        console.log(rand_selector);
         return this.one_point([tmp_inv1,tmp_inv2],rs_points[rand_selector]);
     }
 }

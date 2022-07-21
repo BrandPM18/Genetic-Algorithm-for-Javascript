@@ -12,12 +12,6 @@ function get_fittest_genotype_for_mutation(__offsprings_genotypes) {
     return null;
 }
 
-console.log({
-    "genotype": [1,2,3,0,0,0,0],
-    "phenotype": [1,2,3],
-    "fitness": 123,
-    "selection_probability": 0.3445
-})
 
 let geno= [1,2,3,0,0,0]
 // console.log(get_individual_from_genotype(geno))
@@ -46,9 +40,9 @@ let individuals = [
 let initialValue = 0;
 console.log(individuals.reduce((prev,curr) => {
     return prev + curr.fitness
-  }, initialValue))
+}, initialValue))
 
-// console.log(individuals.sort((a,b) => a.fitness - b.fitness))
+//console.log(individuals.sort((a,b) => a.fitness > b.fitness))
 
 function choise_samples(size,k=1) {
     let choises = []
@@ -62,5 +56,6 @@ function choise_samples(size,k=1) {
   }
 
   let ar = [3,4,5,6,7,8,9,9];
-console.log(ar.slice(3,ar.length))
+//console.log(ar.slice(3,ar.length))
 
+console.log([1,2,3,4,5,6].slice(2))

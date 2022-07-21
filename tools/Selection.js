@@ -56,7 +56,7 @@ function choise_samples(events,k=1,repetition=false) {
   let choises = []
   let i = 0;
   while (i < k) {
-    let event = events[Math.floor(Math.random() *events.length)];
+    let event = events[Math.floor(Math.random() *(events.length-1))];
     if(!repetition) {
       if(choises.indexOf(event) === -1) {
           choises.push(event);
@@ -131,7 +131,7 @@ class Selection_GA {
     while( j < this._size ) {
       let b_id = -1;
       for (let i = 0; i < this._param; i++) {
-        id = Math.floor(Math.random()*len_individuals);
+        id = Math.floor(Math.random()*(len_individuals-1));
         if (b_id==-1 || this._indiv[b_id].fitness < this._indiv[id].fitness)
           b_id = id;
       }
@@ -175,25 +175,6 @@ class Selection_GA {
     return individuals_choised;
   }
 
-  boltzman() {
-    let individuals_choised = [];
-    let copy_indiv = this._indiv;
-    while (individuals_choised.length < this._size) {
-      const index_candidates  = samples_array(copy_indiv.length,2);
-      let p = 1/(1+ Math.exp(
-        (copy_indiv[index_candidates[0]].fitness - copy_indiv[index_candidates[1]].fitness)/this._param
-      ));
-      if (Math.random() <= p) {
-        individuals_choised.push(copy_indiv[index_candidates[0]]);
-        copy_indiv.splice(index_candidates[0],1);;
-      } else {
-        individuals_choised.push(copy_indiv[index_candidates[1]]);
-        copy_indiv.splice(index_candidates[1],1);;
-      }
-    }
-
-    return individuals_choised;
-  }
 }
 
 

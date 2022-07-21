@@ -1,10 +1,11 @@
 class CrossOver_GA {
 
-    constructor(_name= '',_indiv,points = 1,prob_crossover = 0.8) {
+    constructor(_name= '',_indiv,eval_fitness,points = 1,prob_crossover = 0.8) {
         this._name = _name;
         this._indiv = _indiv;
         this._prob_crossover = prob_crossover;
         this.points = points;
+        this.eval_fitness = eval_fitness;
     }
 
     execute() {
@@ -12,12 +13,12 @@ class CrossOver_GA {
             switch (this._name) {
                 case 'N puntos':                
                     return this.n_points();
-                case 'heuristico':                
-                    this.heuristic();
-                case 'uniforme':                
-                    this.uniform();
+                case 'mezcla':                
+                    return this.shuffle();
                 case 'promedio':                
-                    this.average();
+                    return this.average();
+                case 'sustitucion':
+                    return this.point_rsc();
                 default: // N puntos
                     return this.n_points();
             }
@@ -27,8 +28,13 @@ class CrossOver_GA {
         }
     }
 
-    one_point(parents) {
-        const point_index = Math.floor(Math.random()*(parents[0].genotype.length-1))
+    one_point(parents,point_rsc = null) {
+        let point_index = 0;
+        if (point_rsc) {
+            point_index = point_rsc;
+        } else {
+            point_index = Math.floor(Math.random()*(parents[0].genotype.length-1))
+        }
         let childrens = []
         console.log('one_point',point_index);
         for (let i = 0; i < parents.length; i++) {
@@ -53,34 +59,62 @@ class CrossOver_GA {
         return tmp_childs
     }
 
-    heuristic() {
-        return 'srr'
-    }
-
-    uniform() {
-        return 'srr'
+    shuffle() {
+        let [tmp_inv1, tmp_inv2] = this._indiv;
+        for (let i = 0; i < this.points; i++) {
+            let id = Math.floor(Math.random()*(tmp_inv1.genotype.length));
+            console.log('swap ',id)
+            let tmp_gen = tmp_inv1.genotype[id];
+            tmp_inv1.genotype[id] = tmp_inv2.genotype[id];
+            tmp_inv2.genotype[id] = tmp_gen;
+        }
+        return this.one_point([tmp_inv1,tmp_inv2]);
     }
 
     average() {
-        return 'srr'
+        let [tmp_inv1, tmp_inv2] = this._indiv;
+        let children = {
+            "genotype": []
+        }
+        for (let i = 0; i < tmp_inv1.genotype.length; i++) {
+            children.genotype.push(
+                Math.floor(
+                    (tmp_inv1.genotype[i]+tmp_inv2.genotype[i])/2
+                    )
+                );
+        }
+        return [children]
     }
 
+    point_rsc() {
+        // rsc - reduced surrogate crossover
+        let [tmp_inv1, tmp_inv2] = this._indiv;
+        let rs_points = [] 
+        tmp_inv1.genotype.forEach((curr,index) => {
+            if (curr == tmp_inv2.genotype[index]){
+                rs_points.push(index); 
+            }
+        });
+        let rand_selector = Math.floor(Math.random() * (rs_points.length));
+        console.log(rand_selector);
+        return this.one_point([tmp_inv1,tmp_inv2],rs_points[rand_selector]);
+    }
 }
 
 let individuals = [
     {
-        "genotype": [1,2,3,0,0,2,3],
+        "genotype": [1,2,3,4,5,6,7],
         "phenotype": [1,2,3],
         "fitness": 23,
         "selection_probability": 0.344
     },
     {
-        "genotype": [1,3,4,5,2,1,4],
+        "genotype": [0,2,0,0,5,0,0],
         "phenotype": [1,2,3],
         "fitness": 11,
         "selection_probability": 0.145
     }
 ]
-const co = new CrossOver_GA('w',individuals,2);
+const co = new CrossOver_GA('sustitucion',individuals,null,2);
 
 console.log(co.execute())

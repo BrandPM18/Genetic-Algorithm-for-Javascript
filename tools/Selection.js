@@ -1,29 +1,18 @@
 function choice(events, size, probability, repetition= false) {
-  if(probability != null) {
-    const probSum = probability.reduce((sum, v) => sum + v);
-    if(probSum < 1 - Number.EPSILON || probSum > 1 + Number.EPSILON) {
-      //throw Error("La probabilidad global tiene que ser 1.");
-      probability = probability.map((v) => v/probSum);
-    }
-    if(probability.find((p) => p < 0) != undefined) {
-      throw Error("La probabilidad no puede contener valores negativos");
-    }
-    if(events.length != probability.length) {
-      throw Error("Los eventos tienen que tener la misma longitud que la probabilidad");
-    }
-  } else {
-    probability = new Array(events.length).fill(1/events.length);
+  const probSum = probability.reduce((sum, v) => sum + v);
+  if(probSum < 1 - Number.EPSILON || probSum > 1 + Number.EPSILON) {
+    probability = probability.map((v) => v/probSum);
   }
 
   var probabilityRanges = probability.reduce((ranges, v, i) => {
-    var start = i > 0 ? ranges[i-1][1] : 0 - Number.EPSILON;
-    ranges.push([start, v + start + Number.EPSILON]);
+    var start = i > 0 ? ranges[i-1][1] : 0;
+    ranges.push([start, v + start]);
     return ranges;
   }, []);
 
   var choices = new Array();
   var i = 0;
-  while( i < size ){
+  while(i<size){
     var random = Math.random();
     var rangeIndex = probabilityRanges.findIndex((v, i) => random > v[0] && random <= v[1]);
     if (!repetition) {
@@ -101,8 +90,6 @@ class Selection_GA {
         return this.tournament();
       case 'uniforme':                
         return this.uniform();
-      case 'boltzman':                
-        return this.boltzman();
       default: // ruleta
         return this.roulette();
     }
@@ -116,9 +103,9 @@ class Selection_GA {
       return new_individual;
     })
     const individuals_choised = choice(
-      events = new_individuals,
-      size = this._size,
-      probability = new_individuals.map(indiv => indiv.selection_probability)
+      new_individuals,
+      this._size,
+      new_individuals.map(indiv => indiv.selection_probability)
       );
   
     return individuals_choised;
@@ -131,7 +118,7 @@ class Selection_GA {
     while( j < this._size ) {
       let b_id = -1;
       for (let i = 0; i < this._param; i++) {
-        id = Math.floor(Math.random()*(len_individuals-1));
+        let id = Math.floor(Math.random()*(this._indiv.length));
         if (b_id==-1 || this._indiv[b_id].fitness < this._indiv[id].fitness)
           b_id = id;
       }
@@ -151,9 +138,9 @@ class Selection_GA {
       new_individuals[i].selection_probability = ((2-this._param)/mu) + 2*i*((this._param-1)/(mu*(mu-1)));
     }
     const individuals_choised = choice(
-      events = new_individuals,
-      size = this._size,
-      probability = new_individuals.map(indiv => indiv.selection_probability)
+      new_individuals,
+      this._size,
+      new_individuals.map(indiv => indiv.selection_probability)
       );
     return individuals_choised;
   }
@@ -167,9 +154,9 @@ class Selection_GA {
     })
 
     const individuals_choised = choice(
-      events = new_individuals,
-      size = this._size,
-      probability = new_individuals.map(indiv => indiv.selection_probability)
+      new_individuals,
+      this._size,
+      new_individuals.map(indiv => indiv.selection_probability)
       );
   
     return individuals_choised;
@@ -178,4 +165,35 @@ class Selection_GA {
 }
 
 
-console.log(choice([1,5,10,2,4,6],4,[0.2,0.3,0.2,0.5,0.4,0.1]))
+let individuals = [
+  {
+      "genotype": [1,2,3,4,5,6,7],
+      "phenotype": [1,2,3],
+      "fitness": 23,
+      "selection_probability": 0.344
+  },
+  {
+      "genotype": [0,2,0,0,5,0,0],
+      "phenotype": [1,2,3],
+      "fitness": 8,
+      "selection_probability": 0.145
+  },
+  {
+    "genotype": [0,2,0,0,5,0,0],
+    "phenotype": [1,2,3],
+    "fitness": 11,
+    "selection_probability": 0.145
+  },
+  {
+    "genotype": [0,2,0,0,5,0,0],
+    "phenotype": [1,2,3],
+    "fitness": 15,
+    "selection_probability": 0.145
+}
+]
+
+//console.log(choice([1,5,10,2,4,6],4,[0.2,0.3,0.2,0.5,0.4,0.1]))
+
+const sel = new Selection_GA('ranking lineal',individuals, _size=10, _param = 1.2);
+
+console.log(sel.execute())

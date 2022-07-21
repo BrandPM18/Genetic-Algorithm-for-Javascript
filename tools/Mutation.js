@@ -1,6 +1,6 @@
 class Mutation_GA {
 
-    constructor(_name, _indiv,prob_mutation = 0.1) {
+    constructor(_name, _indiv, fitness, prob_mutation = 0.1) {
         this._name = _name;
         this._indiv = _indiv;
         this.prob_mutation = prob_mutation;

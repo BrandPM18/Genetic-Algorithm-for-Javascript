@@ -58,4 +58,21 @@ function choise_samples(size,k=1) {
   let ar = [3,4,5,6,7,8,9,9];
 //console.log(ar.slice(3,ar.length))
 
-console.log([1,2,3,4,5,6].slice(2))
+//console.log([1,2,3,4,5,6].slice(2))
+
+const array = [ 1, 2 ,3 ,4 ,5, 6, 7, 8 ]
+const weight = [ 3, 7, 6, 5, 4, 3, 2, 1 ];
+
+let randomArray = [];
+array.forEach((item, index) => {
+   var clone = Array(weight[index]).fill(item);
+   randomArray.push(...clone);
+});
+console.log(randomArray);
+
+const result = randomArray[~~(Math.random() * randomArray.length)]
+
+console.log('random value:', result);
+
+
+console.log(new Array([1,1,2].length).fill(1/[1,2,1].length))
